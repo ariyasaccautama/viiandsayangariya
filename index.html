@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ariya 🐱 Viia</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #fff1f4, #fff9e1);
+      font-family: 'Comic Sans MS', cursive;
+      overflow-x: hidden;
+      color: #333;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-top: 1em;
+      color: #ff69b4;
+    }
+    
+    h3 {
+      font-size: 2.5em;
+      margin-top: 1em;
+      color: #ff69b4;
+    }
+
+    .message {
+      font-size: 1.2em;
+      max-width: 80%;
+      margin: 1em auto;
+      padding: 1em;
+      background: #fffcef;
+      border: 2px dashed #ffaec9;
+      border-radius: 15px;
+      cursor: pointer;
+    }
+
+    .translation {
+      display: none;
+      margin-top: 0.5em;
+      font-size: 0.9em;
+      color: #666;
+    }
+
+    .gallery {
+      margin-top: 2em;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1em;
+      min-height: 240px;
+    }
+
+    .gallery img {
+      width: 200px;
+      height: auto;
+      border-radius: 15px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .gallery img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .sticker-zone, .reaction {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .sticker {
+      width: 60px;
+      height: 60px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      position: absolute;
+      animation: pop 1s ease-out;
+    }
+
+    .reaction {
+      font-size: 2em;
+      animation: pop 1s ease-out;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0); opacity: 1; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(0.8); opacity: 0; }
+    }
+
+    .btn {
+      margin-top: 1em;
+      padding: 10px 20px;
+      border: none;
+      background-color: #ffb6c1;
+      border-radius: 20px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    footer {
+      margin-top: 3em;
+      font-size: 0.9em;
+      color: #888;
+    }
+
+    audio {
+      display: none;
+    }
+
+    /* Amplop surat */
+    #envelopeContainer {
+      margin-top: 2em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1000px;
+    }
+
+    #envelope {
+      position: relative;
+      width: 250px;
+      height: 150px;
+      background: #ffc0cb;
+      border: 2px solid #ff69b4;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.6s ease;
+    }
+
+    #flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 75px;
+      background: #ffb6c1;
+      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+      transform-origin: top center;
+      transition: transform 0.6s ease;
+      z-index: 2;
+    }
+
+    #letter {
+      position: absolute;
+      top: 20px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+      z-index: 1;
+      font-size: 0.95em;
+      line-height: 1.4em;
+      color: #444;
+    }
+
+    #envelope.opened #flap {
+      transform: rotateX(-180deg);
+    }
+
+    #envelope.opened #letter {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <h1>😺 Hallo Cintaku Duniaku 😺</h1>
+  <h3>klik amplopnya di bawah :D</h3>
+
+  <div class="message" id="message">
+    Pesan Tersembunyi。<br>
+    （Klik untuk lihat Pesannya）<br>
+    <div class="translation" id="translation">
+      "Kau pasti nd sayang aku kan?."
+    </div>
+  </div>
+
+  <button class="btn" id="meowBtn">🐾 Meow Me!</button>
+
+  <div class="gallery" id="galleryZone"></div>
+
+  <div id="envelopeContainer">
+    <div id="envelope">
+      <div id="flap"></div>
+      <div id="letter">
+        <p>
+          I Love You Sayangku Cintaku Duniaku<br>
+          Huh.. tp kamu pasti nd sayang aku~ :(
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sticker-zone" id="stickerZone"></div>
+
+  <!-- Suara Miaw -->
+  <audio id="meowSound">
+    <source src="https://media.vocaroo.com/mp3/1dzvLaAro0eH" type="audio/mpeg" />
+  </audio>
+
+  <footer>🐾🐾🐾🐾🐾🐾🐾🐾🐾🐾</footer>
+
+  <script>
+    const message = document.getElementById("message");
+    const translation = document.getElementById("translation");
+    const galleryZone = document.getElementById("galleryZone");
+    const meowBtn = document.getElementById("meowBtn");
+    const meowSound = document.getElementById("meowSound");
+    const stickerZone = document.getElementById("stickerZone");
+    const envelope = document.getElementById("envelope");
+
+    const bgMusic = new Audio("https://media.vocaroo.com/mp3/1ok5vKJMi7ae");
+    bgMusic.loop = true;
+
+    const viiaPhotos = [
+      "https://i.ibb.co.com/hxjGzQVW/Whats-App-Image-2025-11-28-at-16-23-48-1.jpg",
+      "https://i.ibb.co.com/tTn9fnVL/Whats-App-Image-2025-11-28-at-16-23-48.jpg",
+      "https://i.ibb.co.com/6c24cPRB/Whats-App-Image-2025-11-28-at-16-23-47-2.jpg",
+      "https://i.ibb.co.com/qLnRBJNv/Whats-App-Image-2025-11-28-at-16-23-47-1.jpg",
+      "https://i.ibb.co.com/qLQbKXCz/Whats-App-Image-2025-11-28-at-16-23-47.jpg"
+    ];
+
+    const catStickers = [
+      "https://cdn-icons-png.flaticon.com/512/616/616408.png",
+      "https://cdn-icons-png.flaticon.com/512/616/616430.png",
+      "https://cdn-icons-png.flaticon.com/512/616/616438.png",
+      "https://cdn-icons-png.flaticon.com/512/616/616418.png"
+    ];
+
+    message.addEventListener("click", () => {
+      translation.style.display = translation.style.display === "none" ? "block" : "none";
+    });
+
+    document.body.addEventListener("click", (e) => {
+      meowSound.currentTime = 0;
+      meowSound.play();
+
+      const emoji = document.createElement("div");
+      emoji.className = "reaction";
+      emoji.innerText = ["💖", "😻", "✨", "🐱", "🎀"][Math.floor(Math.random() * 5)];
+      emoji.style.left = `${e.clientX - 10}px`;
+      emoji.style.top = `${e.clientY - 10}px`;
+      document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 1000);
+    });
+
+    function shuffleArray(arr) {
+      return arr.sort(() => 0.5 - Math.random());
+    }
+
+    let firstClick = true;
+
+    meowBtn.addEventListener("click", () => {
+      if (firstClick) {
+        bgMusic.play().catch((e) => {
+          console.warn("Autoplay blocked:", e);
+        });
+        firstClick = false;
+      }
+
+      const sticker = document.createElement("div");
+      sticker.className = "sticker";
+      sticker.style.backgroundImage = `url('${catStickers[Math.floor(Math.random() * catStickers.length)]}')`;
+      sticker.style.left = Math.random() * (window.innerWidth - 60) + "px";
+      sticker.style.top = Math.random() * (window.innerHeight - 60) + "px";
+      stickerZone.appendChild(sticker);
+      setTimeout(() => sticker.remove(), 3000);
+
+      const shuffled = shuffleArray(viiaPhotos.slice());
+      const howMany = Math.floor(Math.random() * 3) + 1;
+      const selected = shuffled.slice(0, howMany);
+      galleryZone.innerHTML = '';
+      selected.forEach(src => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = "Viia 💕";
+        galleryZone.appendChild(img);
+      });
+    });
+
+    envelope.addEventListener("click", () => {
+      envelope.classList.toggle("opened");
+    });
+  </script>
+</body>
+</html>
+
